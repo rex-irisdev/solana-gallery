@@ -8,12 +8,17 @@ import { useConnection } from "@solana/wallet-adapter-react";
 import { Loader, SolanaLogo, SelectAndConnectWalletButton } from "components";
 import { NftCard } from "./NftCard";
 import styles from "./index.module.css";
-const walletPublicKey = "3EqUrFrjgABCWAnqMYjZ36GcktiwDtFdkNYwY6C6cDzy";
+// const walletPublicKey = "3EqUrFrjgABCWAnqMYjZ36GcktiwDtFdkNYwY6C6cDzy";
 
-export const GalleryView: FC = ({}) => {
+export type WalletProps = {
+  username: string;
+  address: string;
+}
+
+export const GalleryView: FC<WalletProps> = ({ username, address }) => {
   const { connection } = useConnection();
   const [walletToParsePublicKey, setWalletToParsePublicKey] =
-    useState<string>(walletPublicKey);
+    useState<string>(address);
   const { publicKey } = useWallet();
 
   const { nfts, isLoading, error } = useWalletNfts({
@@ -52,7 +57,7 @@ export const GalleryView: FC = ({}) => {
                   </Link>
                 </li>
                 <li>
-                  <span className="opacity-40">NFT Gallery</span>
+                  <span className="opacity-40">@{username}</span>
                 </li>
               </ul>
             </div>
@@ -71,26 +76,13 @@ export const GalleryView: FC = ({}) => {
                 </h1>
 
                 <div className="w-full min-w-full">
-                  <p className="mb-5">
-                    Here is very basic example of NFT Gallery. It parses
-                    mainnet. <br />
-                    And uses{" "}
-                    <a
-                      href="https://www.npmjs.com/package/@nfteyez/sol-rayz-react"
-                      target="_blank"
-                      className="link font-bold"
-                      rel="noreferrer"
-                    >
-                      @nfteyez/sol-rayz-react
-                    </a>{" "}
-                    package to fetch NFTs for specific wallet.
-                  </p>
+                  <h2>@{username}</h2>
                   <div>
                     <div className="form-control mt-8">
                       <label className="input-group input-group-vertical input-group-lg">
                         <span>Search</span>
                         <div className="flex space-x-2">
-                          <input
+                          <input readOnly
                             type="text"
                             placeholder="Enter Wallet Address"
                             className="w-full input input-bordered input-lg"
