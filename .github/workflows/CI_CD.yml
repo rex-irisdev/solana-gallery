@@ -1,0 +1,35 @@
+name: CI/CD counter app
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+#First we will see the application build or not , then we will deploy in EC2
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build the docker_compose
+      run: docker build -t solana-project .
+      
+    - name: Generate executable file
+      run: docker save -o solana-project solana-project.tar
+    
+    - name: Transfer executable
+      env:
+            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+            HOSTNAME : ${{ secrets.HOSTNAME  }}
+            USER_NAME : ${{ secrets.USER_NAME  }}
+      run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          scp -o StrictHostKeyChecking=no -i private_key ./solana-project.tar ${USER_NAME}@${HOSTNAME}:~/solana-project.tar
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          
+            #Now we have got the access of EC2 and we will start the deploy .
+            docker load -i solana-project.tar
+            docker-compose up -d
+            exit
+          '
