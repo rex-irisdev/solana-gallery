@@ -25,10 +25,12 @@ jobs:
             USER_NAME : ${{ secrets.USER_NAME  }}
       run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -i private_key ./solana-project.tar ${USER_NAME}@${HOSTNAME}:~/solana-project.tar
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} 'mkdir -p solana-project'
+          scp -o StrictHostKeyChecking=no -i private_key ./docker-compose.yml ./solana-project.tar ${USER_NAME}@${HOSTNAME}:~/solana-project
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-          
+
             #Now we have got the access of EC2 and we will start the deploy .
+            cd solana-project
             docker load -i solana-project.tar
             docker-compose up -d
             exit
