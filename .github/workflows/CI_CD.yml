@@ -16,7 +16,7 @@ jobs:
       run: docker build -t solana-project .
       
     - name: Generate executable file
-      run: docker save -o solana-project solana-project.tar
+      run: docker save -o solana-project.tar solana-project
     
     - name: Transfer executable
       env:
